@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Produit</title>
+</head>
+<body>
+    <h1>Produit</h1>
+    <form id="stock">
+    <label>Nom du produit: </label>
+    <input type="text" id="nom_du_produit">
+    <label>Catégorie: </label>
+    <input type="text" id="categorie">
+    <label>Prix: </label>
+    <input type="number" id="prix">
+    <label>Quantité du stock:</label>
+    <input type="number" id="quantite">
+    <button id="bouton">Ajouter</button>
+    </form>
+    <p id="message"></p>
+    <div id="listproduit"></div>
+    <script>
+        let produits = []; 
+        function sauvegarderProduits() {   
+         localStorage.setItem("produits", JSON.stringify(produits));
+     }
+    function chargerProduits() {  
+          let donnees = localStorage.getItem("produits");  
+            if (donnees !== null) {       
+             produits = JSON.parse(donnees);    }
+     }    
+
+        function afficherProduits(){
+            let liste = document.getElementById("listproduit");
+            liste.innerHTML = "";
+            produits.forEach(function(Produit,index) {
+                liste.innerHTML += `
+                <div class="Produit">
+                    <p>Numero: ${index + 1}</p>
+                    <p>Nom du produit: ${Produit.nom}</p>
+                    <p>Catégorie: ${Produit.categorie}</p>
+                    <p>Prix: ${Produit.prix}</p>
+                    <p>Quantité: ${Produit.quantite}</p>
+                     <button onclick="modifierProduit(${index})">
+                        modifier </button>
+                    <button onclick="supprimerProduit(${index})">
+                        supprimer </button>
+                    </div>`;
+            });
+        }
+
+        document.getElementById("stock")
+        .addEventListener("submit", function(event){
+            event.preventDefault();
+            let nom = document.getElementById("nom_du_produit").value;
+            let categorie = document.getElementById("categorie").value;
+            let prix = document.getElementById("prix").value;
+            let quantite = document.getElementById("quantite").value;
+            let message = document.getElementById("message");
+           
+            if(nom === "" || categorie === "" || prix === "" || quantite === ""){
+                alert ("Veuillez remplir les cases.");
+                return;
+            }
+            let nouveau_produit = {
+                nom: nom,
+                categorie: categorie,
+                prix: prix,
+                quantite: quantite,
+            };
+            produits.push(nouveau_produit);
+            sauvegarderProduits();
+            afficherProduits();
+            document.getElementById("stock").reset();
+        });
+        function modifierProduit (index){
+            let nouvel_nom=prompt("modifier",produits[index].nom);
+            if(nouvel_nom ===null || nouvel_nom==="")return;
+             let nouvel_categorie=prompt("modifier",produits[index].categorie);
+             if(nouvel_categorie ===null || nouvel_categorie==="")return;
+              let nouvel_prix=prompt("modifier",produits[index].prix);
+              if(nouvel_prix ===null || nouvel_prix==="")return;
+               let nouvel_quantite=prompt("modifier",produits[index].quantite);
+               if(nouvel_quantite === null || nouvel_quantite==="")return;
+            {
+                produits[index].nom=nouvel_nom;
+                produits[index].categorie=nouvel_categorie;
+                produits[index].prix=nouvel_prix;
+                produits[index].quantite=nouvel_quantite;
+                sauvegarderProduits();
+                afficherProduits();
+            }
+        };
+        function supprimerProduit(index){
+            let confirmer=confirm("vouler-vous supprimer ce produit ?");
+            if(confirmer){
+                produits.splice(index, 1);
+                sauvegarderProduits();
+                afficherProduits();
+            }
+        }
+        chargerProduits();
+        afficherProduits();
+    </script>
+</body>
+</html>
